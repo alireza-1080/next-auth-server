@@ -3,6 +3,7 @@ import cookieParser from 'cookie-parser';
 import helmet from 'helmet';
 import cors from 'cors';
 import authRoutes from './routes/auth.js';
+import todoRoutes from './routes/todos.js';
 
 //^ Create an express app
 const app = express();
@@ -19,7 +20,7 @@ app.use(cors({
 
 //^ Routes
 app.use('/auth', authRoutes);
-// app.use('/todos', todoRoutes);
+app.use('/todos', todoRoutes);
 
 
 
