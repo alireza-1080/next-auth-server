@@ -4,9 +4,6 @@ import helmet from 'helmet';
 import cors from 'cors';
 import authRoutes from './routes/auth.js';
 
-
-const clientOrigin = process.env.CLIENT_ORIGIN;
-
 //^ Create an express app
 const app = express();
 
@@ -16,7 +13,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 app.use(helmet());
 app.use(cors({
-    origin: clientOrigin,
+    origin: "http://localhost:3000",
     credentials: true
 }));
 

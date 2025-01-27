@@ -9,6 +9,7 @@ import nameValidator from '../validators/nameValidator.js';
 import User from '../models/user.js';
 import bcrypt from 'bcrypt';
 import generateToken from '../utils/generateToken.js';
+import jwt from 'jsonwebtoken';
 
 const signup = async (req, res) => {
   try {
@@ -52,6 +53,9 @@ const signup = async (req, res) => {
     //^ Send the user as response
     return res.status(201).json(user);
   } catch (error) {
+    if (error.code === 11000) {
+      return res.status(400).json({ error: 'Email already exists' });
+    }
     return res.status(400).json({ error: error.message });
   }
 };
@@ -63,12 +67,13 @@ const login = async (req, res) => {
 
     //^ Validate email
     email = emailValidator(email);
-
+    
     //^ Validate password
     password = passwordValidator(password);
 
     //^ Find the user with the email
-    let user = await User.findOne({ email }).populate('todos');
+    let user = await User.findOne({ email })
+    // .populate('todos');
 
     //^ If the user does not exist, throw an error
     if (!user) {
@@ -105,19 +110,20 @@ const login = async (req, res) => {
 
 const verify = async (req, res) => {
   try {
-    //^ Get the token from the cookie
-    const token = req.cookies.token;
-
+    //^ Get the token from the request body
+    const token = req.body.token;
+    
     //^ If the token does not exist, throw an error
     if (!token) {
       throw new Error('Not authenticated');
     }
-
+    
     //^ Verify the token
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
     //^ Find the user with the id
-    let user = await User.findById(decoded.id).populate('todos');
+    let user = await User.findById(decoded.id);
+    // .populate('todos');
 
     //^ If the user does not exist, throw an error
     if (!user) {
