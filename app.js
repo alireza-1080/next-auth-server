@@ -2,6 +2,8 @@ import express from 'express';
 import cookieParser from 'cookie-parser';
 import helmet from 'helmet';
 import cors from 'cors';
+import authRoutes from './routes/auth.js';
+
 
 const clientOrigin = process.env.CLIENT_ORIGIN;
 
@@ -14,14 +16,13 @@ app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 app.use(helmet());
 app.use(cors({
-    origin: 'http://localhost:3000',
+    origin: clientOrigin,
     credentials: true
 }));
 
 //^ Routes
-app.get('/', (req, res) => {
-    res.send('Hello World');
-});
+app.use('/auth', authRoutes);
+// app.use('/todos', todoRoutes);
 
 
 
