@@ -67,12 +67,12 @@ const login = async (req, res) => {
 
     //^ Validate email
     email = emailValidator(email);
-    
+
     //^ Validate password
     password = passwordValidator(password);
 
     //^ Find the user with the email
-    let user = await User.findOne({ email })
+    let user = await User.findOne({ email });
     // .populate('todos');
 
     //^ If the user does not exist, throw an error
@@ -110,20 +110,24 @@ const login = async (req, res) => {
 
 const verify = async (req, res) => {
   try {
-    //^ Get the token from the request body
-    const token = req.body.token;
-    
+    //^ Get the token from the request body if it exists
+    let token = req.body.token;
+
+    //^ If the token does not exist, get the token from the cookie
+    if (!token) {
+      token = req.cookies.token;
+    }
+
     //^ If the token does not exist, throw an error
     if (!token) {
       throw new Error('Not authenticated');
     }
-    
+
     //^ Verify the token
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
     //^ Find the user with the id
-    let user = await User.findById(decoded.id);
-    // .populate('todos');
+    let user = await User.findById(decoded.id).populate('todos', { title: 1, isCompleted: 1, id: 1 });
 
     //^ If the user does not exist, throw an error
     if (!user) {
